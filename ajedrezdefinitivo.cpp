@@ -1,149 +1,151 @@
 #include <iostream>
+#include <string.h>
 using namespace std;
 
 class tablero;
 
 class marcador {
-private:
-	bool turno = 1;		//Empieza por 1 para que al entrar por primera vez en el bucle do-while de la partida se cambie a 0 y empiecen blancas así
-	char color_actual[8];
-public:
-	void cambia_turno() { turno = (!turno); }
-	bool ver_turno() { return turno; }
-	void imprime();
+	private:
+		bool turno = 1;		//Empieza por 1 para que al entrar por primera vez en el bucle do-while de la partida se cambie a 0 y empiecen blancas así
+		char color_actual[8];
+	public:
+		void cambia_turno() { turno = (!turno); }
+		bool ver_turno() { return turno; }
+		void imprime();
 };
 
 class pieza {
-private:
-	char color; 			// será 'b' si es una pieza blanca y 'n' si es una pieza negra
-	char letra;
+	private:
+		char color; 			// será 'b' si es una pieza blanca y 'n' si es una pieza negra
+		
 
-protected: 				// Pongo la fila y columna actuales de la pieza como protected para que cada pieza tenga el control de su posicion
-	char columna_pieza; 	// Nota: La fila y la columna iniciales de cada pieza debe darlas el tablero (?)
-	int fila_pieza;
-	bool muerto;
-public:
-	pieza(char colour, char letter, char col, int fil) { color = colour; letra = letter; columna_pieza = col; fila_pieza = fil; muerto = 0; }
-	char getletra() { return letra; }
-	char getcolor() { return color; }
-	char getcolumna() { return columna_pieza; }
-	int getfila() { return fila_pieza; }
-	virtual bool moverse(const char, const int) { cout << "hello"; return 0; }
+	protected: 				// Pongo la fila y columna actuales de la pieza como protected para que cada pieza tenga el control de su posicion
+		char columna_pieza; 	// Nota: La fila y la columna iniciales de cada pieza debe darlas el tablero (?)
+		int fila_pieza;
+		bool muerto;
+	public:
+		const char* letra;
+
+		pieza(char colour, const char* letter, char col, int fil) { color = colour; letra = letter; columna_pieza = col; fila_pieza = fil; muerto = 0; }
+		const char* getletra() { return letra; }
+		char getcolor() { return color; }
+		char getcolumna() { return columna_pieza; }
+		int getfila() { return fila_pieza; }
+		virtual bool moverse(const char, const int) { cout << "hello"; return 0; }
 };
 
 class alfil : public pieza {
-public:
-	alfil(char colour, char letter, char col, int fil) : pieza(colour, letter, col, fil) {}
-	bool moverse(const char, const int);
-	bool capturar(const char, const int);
+	public:
+		alfil(char colour, const char* letter, char col, int fil) : pieza(colour, letter, col, fil) {}
+		bool moverse(const char, const int);
+		bool capturar(const char, const int);
 
 };
 
 class caballo : public pieza {
-public:
-	caballo(char colour, char letter, char col, int fil) : pieza(colour, letter, col, fil) {}
-	bool moverse(const char, const int);
+	public:
+		caballo(char colour, const char* letter, char col, int fil) : pieza(colour, letter, col, fil) {}
+		bool moverse(const char, const int);
 };
 
 class dama : public pieza {
-public:
-	dama(char colour, char letter, char col, int fil) : pieza(colour, letter, col, fil) {}
-	bool moverse(const char, const int);
-	bool capturar(const char, const int);
+	public:
+		dama(char colour, const char* letter, char col, int fil) : pieza(colour, letter, col, fil) {}
+		bool moverse(const char, const int);
+		bool capturar(const char, const int);
 
 };
 
 class rey : public pieza {
-private:
-	bool he_movido;
+	private:
+		bool he_movido;
 
-public:
-	rey(char colour, char letter, char col, int fil) : pieza(colour, letter, col, fil) { he_movido = 0; }
-	bool moverse(const char, const int);
+	public:
+		rey(char colour, const char* letter, char col, int fil) : pieza(colour, letter, col, fil) { he_movido = 0; }
+		bool moverse(const char, const int);
 };
 
 class torre : public pieza {
-private:
-	bool he_movido;
-public:
-	torre(char colour, char letter, char col, int fil) : pieza(colour, letter, col, fil) {}
-	bool moverse(const char, const int);
-	bool capturar(const char, const int);
+	private:
+		bool he_movido;
+	public:
+		torre(char colour, const char* letter, char col, int fil) : pieza(colour, letter, col, fil) {}
+		bool moverse(const char, const int);
+		bool capturar(const char, const int);
 };
 
 class peon : public pieza {
-private:
-	bool he_movido;
-public:
-	peon(char colour, char letter, char col, int fil) : pieza(colour, letter, col, fil) { he_movido = 0; }
-	bool moverse(const char, const int);
-	bool capturar(const char, const int);
+	private:
+		bool he_movido;
+	public:
+		peon(char colour, const char* letter, char col, int fil) : pieza(colour, letter, col, fil) { he_movido = 0; }
+		bool moverse(const char, const int);
+		bool capturar(const char, const int);
 };
 
 class fantasma : public pieza {
-public:
-	fantasma(char colour, char letter, char col, int fil) : pieza(colour, letter, col, fil) {}
+	public:
+		fantasma(char colour, const char* letter, char col, int fil) : pieza(colour, letter, col, fil) {}
 };
 
 class casilla {
-private:
-	pieza *p;
-public:
-	pieza* punt() { return p; }
-	void setp(pieza* una) { p = una; }
+	private:
+		pieza *p;
+	public:
+		pieza* punt() { return p; }
+		void setp(pieza* una) { p = una; }
 };
 
 class tablero {
+	private:
+		casilla **tabla;
 
-private:
-	casilla **tabla;
-
-public:
-	tablero();		//constructor del tablero en el fichero tablero.cpp
-	void imprimetablero();		//imprime el tablero 
-	casilla gettabla(int fil, int col) { return tabla[fil][col]; }
-	void cambio_casilla(int, char, int, char);
+	public:
+		tablero();		//constructor del tablero en el fichero tablero.cpp
+		void imprimetablero();		//imprime el tablero 
+		casilla gettabla(int fil, int col) { return tabla[fil][col]; }
+		void cambio_casilla(int, char, int, char);
 };
 
 //declaracion de las piezas como variables globales
 
 tablero mitablero; 	//declaro tablero
 
-torre TN1('n', 'T', 'a', 8);		//creo una torre negra llamando al constructor de torre
-torre TN2('n', 'T', 'h', 8);		//creo la otra torre negra llamando al constructor de torre
-caballo CN1('n', 'C', 'b', 8);		//creo un caballo negro llamando al constructor de caballo
-caballo CN2('n', 'C', 'g', 8);		//creo el otro caballo negro llamando al constructor de caballo
-alfil AN1('n', 'A', 'c', 8);		//creo el alfil negro llamando al constructor de alfil
-alfil AN2('n', 'A', 'f', 8);		//creo el otro alfil negro llamando al constructor de alfil
-rey RN('n', 'R', 'e', 8);		//creo el rey negro llamando al constructor de rey
-dama DN('n', 'D', 'd', 8);		//creo la dama negra llamando al constructor de dama
-peon PN1('n', 'P', 'a', 7);
-peon PN2('n', 'P', 'b', 7);
-peon PN3('n', 'P', 'c', 7);
-peon PN4('n', 'P', 'd', 7);
-peon PN5('n', 'P', 'e', 7);		//creo los peones negros llamando al constructor de peon que a su vez llama al constructor de pieza
-peon PN6('n', 'P', 'f', 7);
-peon PN7('n', 'P', 'g', 7);
-peon PN8('n', 'P', 'h', 7);
+torre TN1('n', "\u265C", 'a', 8);		//creo una torre negra llamando al constructor de torre
+torre TN2('n', "\u265C", 'h', 8);		//creo la otra torre negra llamando al constructor de torre
+caballo CN1('n', "\u265E", 'b', 8);		//creo un caballo negro llamando al constructor de caballo
+caballo CN2('n', "\u265E", 'g', 8);		//creo el otro caballo negro llamando al constructor de caballo
+alfil AN1('n', "\u265D", 'c', 8);		//creo el alfil negro llamando al constructor de alfil
+alfil AN2('n', "\u265D", 'f', 8);		//creo el otro alfil negro llamando al constructor de alfil
+rey RN('n', "\u265A", 'e', 8);		//creo el rey negro llamando al constructor de rey
+dama DN('n', "\u265B", 'd', 8);		//creo la dama negra llamando al constructor de dama
+peon PN1('n', "\u265F", 'a', 7);
+peon PN2('n', "\u265F", 'b', 7);
+peon PN3('n', "\u265F", 'c', 7);
+peon PN4('n', "\u265F", 'd', 7);
+peon PN5('n', "\u265F", 'e', 7);		//creo los peones negros llamando al constructor de peon que a su vez llama al constructor de pieza
+peon PN6('n', "\u265F", 'f', 7);
+peon PN7('n', "\u265F", 'g', 7);
+peon PN8('n', "\u265F", 'h', 7);
 
-torre tb1('b', 't', 'a', 1);		//creo una torre blanca llamando al constructor de torre
-torre tb2('b', 't', 'h', 1);		//creo la otra torre blanca llamando al constructor de torre
-caballo cb1('b', 'c', 'b', 1);		//creo un caballo blanco llamando al constructor de caballo
-caballo cb2('b', 'c', 'g', 1);		//creo el otro caballo blanco llamando al constructor de caballo
-alfil ab1('b', 'a', 'c', 1);		//creo el alfil blanco llamando al constructor de alfil
-alfil ab2('b', 'a', 'f', 1);		//creo el otro blanco negro llamando al constructor de alfil
-rey rb('b', 'r', 'e', 1);		//creo el rey blanco llamando al constructor de rey
-dama db('b', 'd', 'd', 1);		//creo la dama blanca llamando al constructor de dama
-peon pb1('b', 'p', 'a', 2);
-peon pb2('b', 'p', 'b', 2);
-peon pb3('b', 'p', 'c', 2);
-peon pb4('b', 'p', 'd', 2);
-peon pb5('b', 'p', 'e', 2);		//creo los peones blancos llamando al constructor de peon que a su vez llama al constructor de pieza
-peon pb6('b', 'p', 'f', 2);
-peon pb7('b', 'p', 'g', 2);
-peon pb8('b', 'p', 'h', 2);
+torre tb1('b', "\u2656", 'a', 1);		//creo una torre blanca llamando al constructor de torre
+torre tb2('b', "\u2656", 'h', 1);		//creo la otra torre blanca llamando al constructor de torre
+caballo cb1('b', "\u2658", 'b', 1);		//creo un caballo blanco llamando al constructor de caballo
+caballo cb2('b', "\u2658", 'g', 1);		//creo el otro caballo blanco llamando al constructor de caballo
+alfil ab1('b', "\u2657", 'c', 1);		//creo el alfil blanco llamando al constructor de alfil
+alfil ab2('b', "\u2657", 'f', 1);		//creo el otro blanco negro llamando al constructor de alfil
+rey rb('b', "\u2654", 'e', 1);		//creo el rey blanco llamando al constructor de rey
+dama db('b', "\u2655", 'd', 1);		//creo la dama blanca llamando al constructor de dama
+peon pb1('b', "\u2659", 'a', 2);
+peon pb2('b', "\u2659", 'b', 2);
+peon pb3('b', "\u2659", 'c', 2);
+peon pb4('b', "\u2659", 'd', 2);
+peon pb5('b', "\u2659", 'e', 2);		//creo los peones blancos llamando al constructor de peon que a su vez llama al constructor de pieza
+peon pb6('b', "\u2659", 'f', 2);
+peon pb7('b', "\u2659", 'g', 2);
+peon pb8('b', "\u2659", 'h', 2);
 
-fantasma espacio(' ', ' ', ' ', ' '); //pieza fantasma para las casillas vacias
+fantasma espacio(' ', " ", ' ', ' '); //pieza fantasma para las casillas vacias
 
 marcador m_turno;  //Se instancia el objeto m_turno que es de clase marcador_turno	
 
@@ -268,7 +270,7 @@ bool torre::moverse(const char col, const int fil) {
 		if (he_movido == 0) he_movido = 1;
 		return 1;
 	}
-
+	return 0;
 }
 
 bool torre::capturar(const char col, const int fil) {
@@ -311,6 +313,7 @@ bool torre::capturar(const char col, const int fil) {
 			return 1;
 		}
 	}
+	return 0;
 }
 
 bool peon::moverse(const char col, const int fil) {
@@ -451,6 +454,7 @@ bool alfil::moverse(const char col, const int fil) {
 			}
 		} //fin if 4
 	} //fin else
+	return 0;
 }
 
 bool alfil::capturar(const char col, const int fil) {
@@ -509,8 +513,7 @@ bool alfil::capturar(const char col, const int fil) {
 			}
 		} //fin if 4
 	} //fin else
-
-
+	return 0;
 }
 
 bool dama::moverse(const char col, const int fil) {
@@ -611,6 +614,7 @@ bool dama::moverse(const char col, const int fil) {
 		} //fin if 4
 	} //fin movimiento en diagonal
 	else return 0;
+	return 0;
 }
 
 bool dama::capturar(const char col, const int fil) {
@@ -713,6 +717,7 @@ bool dama::capturar(const char col, const int fil) {
 		} //fin if 4
 	} //fin movimiento en diagonal
 	else return 0;
+	return 0;
 }
 
 
@@ -754,8 +759,10 @@ int main() {
 
 
 	do {					   			//Bucle do-while de la partida al completo, de manera que se vuelva a entrar en el bucle de cada jugada cada vez que se cambie de turno
+		
 		m_turno.cambia_turno(); 			//Cada vez que se repite el bucle cambia de turno
 		m_turno.imprime();
+
 		turno = m_turno.ver_turno();   	//Vemos el turno una sóla vez por jugada
 		mitablero.imprimetablero();
 		do {							//Bucle do-while de cada jugada
